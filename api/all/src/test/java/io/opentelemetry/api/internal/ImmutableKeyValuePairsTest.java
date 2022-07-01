@@ -21,6 +21,14 @@ class ImmutableKeyValuePairsTest {
     assertThat(new TestPairs(new Object[] {"one", 55, "two", "b"}).get("one")).isEqualTo(55);
     assertThat(new TestPairs(new Object[] {"one", 55, "two", "b"}).get("two")).isEqualTo("b");
     assertThat(new TestPairs(new Object[] {"one", 55, "two", "b"}).get("three")).isNull();
+    assertThat(new TestPairs(new Object[] {"one", 55, "one", null, "one", 66}).get("one"))
+        .isEqualTo(66);
+    assertThat(
+            new TestPairs(new Object[] {"one", 55, "one", null, "one", 66, "one", null}).get("two"))
+        .isNull();
+    assertThat(
+            new TestPairs(new Object[] {"one", 55, "two", "b", "one", null, "one", 66}).get("one"))
+        .isEqualTo(66);
   }
 
   @Test
@@ -28,6 +36,10 @@ class ImmutableKeyValuePairsTest {
     assertThat(new TestPairs(new Object[0]).size()).isEqualTo(0);
     assertThat(new TestPairs(new Object[] {"one", 55}).size()).isEqualTo(1);
     assertThat(new TestPairs(new Object[] {"one", 55, "two", "b"}).size()).isEqualTo(2);
+    assertThat(new TestPairs(new Object[] {"one", 55, "two", "b", "one", "c"}).size()).isEqualTo(2);
+    assertThat(new TestPairs(new Object[] {"one", null}).size()).isEqualTo(0);
+    assertThat(new TestPairs(new Object[] {"one", "a", "one", null}).size()).isEqualTo(0);
+    assertThat(new TestPairs(new Object[] {"one", null, "one", "a"}).size()).isEqualTo(1);
   }
 
   @Test

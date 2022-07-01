@@ -211,6 +211,10 @@ public abstract class ImmutableKeyValuePairs<K, V> {
       // Skip entries with null value, we do it here because we want them to overwrite and remove
       // entries with same key that we already added.
       if (value == null) {
+        // The null value causes the key/value to not be included in the compact array at all, so
+        // we null the key out here to start fresh (reset state). On the next pass, we treat the
+        // next key like we haven't seen it before, regardless.
+        previousKey = null;
         continue;
       }
       previousKey = key;
