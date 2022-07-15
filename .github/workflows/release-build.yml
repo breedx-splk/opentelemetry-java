@@ -17,7 +17,7 @@ jobs:
         with:
           distribution: adopt
           java-version: 17
-      - uses: burrunan/gradle-cache-action@v1.10
+      - uses: burrunan/gradle-cache-action@v1.12
         with:
           job-id: jdk17
           remote-build-cache-proxy-enabled: false
