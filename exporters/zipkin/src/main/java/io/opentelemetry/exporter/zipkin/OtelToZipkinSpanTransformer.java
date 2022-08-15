@@ -20,6 +20,7 @@ import io.opentelemetry.sdk.trace.data.StatusData;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import java.net.InetAddress;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import zipkin2.Endpoint;
@@ -195,22 +196,35 @@ public final class OtelToZipkinSpanTransformer {
       case DOUBLE:
         return String.valueOf(attributeValue);
       case STRING_ARRAY:
+        return listify((List<?>) attributeValue, true);
       case BOOLEAN_ARRAY:
       case LONG_ARRAY:
       case DOUBLE_ARRAY:
-        return commaSeparated((List<?>) attributeValue);
+        return listify((List<?>) attributeValue);
     }
     throw new IllegalStateException("Unknown attribute type: " + type);
   }
 
-  private static String commaSeparated(List<?> values) {
+  private static String listify(List<?> values) {
+    return listify(values, false);
+  }
+
+  private static String listify(List<?> values, boolean wrapWithQuotes) {
     StringBuilder builder = new StringBuilder();
+    builder.append("[");
     for (Object value : values) {
-      if (builder.length() != 0) {
+      if (builder.length() > 1) {
         builder.append(',');
       }
-      builder.append(value);
+      if(wrapWithQuotes){
+        builder.append("\"").append(value).append("\"");
+      }
+      else {
+        builder.append(value);
+      }
     }
+    builder.append("]");
     return builder.toString();
   }
+
 }

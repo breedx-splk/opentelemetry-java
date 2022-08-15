@@ -172,6 +172,7 @@ class OtelToZipkinSpanTransformerTest {
             .put(doubleKey("double"), 222.333d)
             .put(booleanArrayKey("booleanArray"), Arrays.asList(true, false))
             .put(stringArrayKey("stringArray"), Collections.singletonList("Hello"))
+            .put(stringArrayKey("stringArray2"), Arrays.asList("Hello", "and", "Goodbye"))
             .put(doubleArrayKey("doubleArray"), Arrays.asList(32.33d, -98.3d))
             .put(longArrayKey("longArray"), Arrays.asList(33L, 999L))
             .build();
@@ -190,12 +191,13 @@ class OtelToZipkinSpanTransformerTest {
                 .putTag("boolean", "false")
                 .putTag("long", "9999")
                 .putTag("double", "222.333")
-                .putTag("booleanArray", "true,false")
-                .putTag("stringArray", "Hello")
-                .putTag("doubleArray", "32.33,-98.3")
-                .putTag("longArray", "33,999")
+                .putTag("booleanArray", "[true,false]")
+                .putTag("stringArray", "[\"Hello\"]")
+                .putTag("stringArray2", "[\"Hello\",\"and\",\"Goodbye\"]")
+                .putTag("doubleArray", "[32.33,-98.3]")
+                .putTag("longArray", "[33,999]")
                 .putTag(OtelToZipkinSpanTransformer.OTEL_STATUS_CODE, "OK")
-                .putTag(OtelToZipkinSpanTransformer.OTEL_DROPPED_ATTRIBUTES_COUNT, "20")
+                .putTag(OtelToZipkinSpanTransformer.OTEL_DROPPED_ATTRIBUTES_COUNT, "19")
                 .putTag(OtelToZipkinSpanTransformer.OTEL_DROPPED_EVENTS_COUNT, "1")
                 .build());
   }
