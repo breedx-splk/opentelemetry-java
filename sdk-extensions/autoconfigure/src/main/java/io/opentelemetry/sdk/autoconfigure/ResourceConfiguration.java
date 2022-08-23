@@ -46,7 +46,8 @@ final class ResourceConfiguration {
       if (disabledProviders.contains(resourceProvider.getClass().getName())) {
         continue;
       }
-      result = result.merge(resourceProvider.createResource(config));
+      Resource newResource = resourceProvider.createResource(config, result);
+      result = result.merge(newResource);
     }
 
     result = result.merge(createEnvironmentResource(config));

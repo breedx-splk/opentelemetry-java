@@ -13,5 +13,20 @@ import io.opentelemetry.sdk.resources.Resource;
  */
 public interface ResourceProvider extends Ordered {
 
-  Resource createResource(ConfigProperties config);
+  default Resource createResource(ConfigProperties config) {
+    return Resource.empty();
+  }
+
+  /**
+   * Implementations that need to inspect the current state of the existing {@link Resource} <em>as
+   * it is being built</em> may implement this method. Implementations are discouraged from calling
+   * merge() on the existing resource.
+   *
+   * @param config - The auto configuration properties
+   * @param existing - The current state of the resource being created
+   * @return a new Resource
+   */
+  default Resource createResource(ConfigProperties config, Resource existing) {
+    return createResource(config);
+  }
 }
