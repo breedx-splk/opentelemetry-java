@@ -28,6 +28,7 @@ public class SpanExporterCustomizer implements AutoConfigurationCustomizerProvid
                         .map(
                             span ->
                                 new DelegatingSpanData(span) {
+
                                   @Override
                                   public Attributes getAttributes() {
                                     return span.getAttributes().toBuilder()
