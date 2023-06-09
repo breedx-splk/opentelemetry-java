@@ -21,7 +21,7 @@ val DEPENDENCY_BOMS = listOf(
   "io.grpc:grpc-bom:1.54.0",
   "io.netty:netty-bom:4.1.91.Final",
   "io.zipkin.brave:brave-bom:5.15.0",
-  "io.zipkin.reporter2:zipkin-reporter-bom:2.16.3",
+  "io.zipkin.reporter2:zipkin-reporter-bom:2.16.4",
   "org.assertj:assertj-bom:3.24.2",
   "org.junit:junit-bom:5.9.2",
   "org.testcontainers:testcontainers-bom:1.18.0",
