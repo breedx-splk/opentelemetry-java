@@ -138,7 +138,7 @@ public class GrpcExporterBuilder<T extends Marshaler> {
     return this;
   }
 
-  public GrpcExporterBuilder<T> addHeaders(String key, Supplier<List<String>> headerSupplier) {
+  public GrpcExporterBuilder<T> addMultiValuedHeader(String key, Supplier<List<String>> headerSupplier) {
     headers.compute(key,
             (k, existing) -> () -> {
               List<String> result = new ArrayList<>();

@@ -178,7 +178,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    */
   public OtlpGrpcLogRecordExporterBuilder addHeaders(
       Map<String, Supplier<List<String>>> headerSupplier) {
-    headerSupplier.forEach(delegate::addHeaders);
+    headerSupplier.forEach(delegate::addMultiValuedHeader);
     return this;
   }
 

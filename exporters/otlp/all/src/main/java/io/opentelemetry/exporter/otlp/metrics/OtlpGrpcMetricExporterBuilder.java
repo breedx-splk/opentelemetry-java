@@ -193,7 +193,7 @@ public final class OtlpGrpcMetricExporterBuilder {
    * TODO NEEDS JAVADOC
    */
   public OtlpGrpcMetricExporterBuilder addHeaderMulti(String key, Supplier<List<String>> headerSupplier) {
-    delegate.addHeaders(key, headerSupplier);
+    delegate.addMultiValuedHeader(key, headerSupplier);
     return this;
   }
 

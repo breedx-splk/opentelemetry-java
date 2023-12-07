@@ -174,7 +174,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * {@link OtlpGrpcSpanExporterBuilder#setChannel(ManagedChannel)} is not used to set channel.
    */
   public OtlpGrpcSpanExporterBuilder addHeaders(Map<String, Supplier<List<String>>> headerSupplier) {
-    headerSupplier.forEach(delegate::addHeaders);
+    headerSupplier.forEach(delegate::addMultiValuedHeader);
     return this;
   }
 
