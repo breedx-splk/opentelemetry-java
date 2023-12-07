@@ -45,7 +45,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
 
   OtlpGrpcLogRecordExporterBuilder(GrpcExporterBuilder<LogsRequestMarshaler> delegate) {
     this.delegate = delegate;
-    OtlpUserAgent.addUserAgentHeader(delegate::addConstantHeader);
+    OtlpUserAgent.addUserAgentHeader(delegate::addHeader);
   }
 
   OtlpGrpcLogRecordExporterBuilder() {
@@ -154,7 +154,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
 
   /**
    * Add a constant header to requests. If the {@code key} collides with another constant header
-   * name or a one from {@link #setHeaders(Supplier)}, the values from both are included. Applicable
+   * name or a one from {@link #addHeader(String, Supplier)}, the values from both are included. Applicable
    * only if {@link OtlpGrpcLogRecordExporterBuilder#setChannel(ManagedChannel)} is not used to set
    * channel.
    *
@@ -163,18 +163,22 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * @return this builder's instance
    */
   public OtlpGrpcLogRecordExporterBuilder addHeader(String key, String value) {
-    delegate.addConstantHeader(key, value);
+    delegate.addHeader(key, value);
     return this;
   }
 
+  public OtlpGrpcLogRecordExporterBuilder addHeader(String key, Supplier<String> value) {
+    delegate.addHeader(key, value);
+    return this;
+  }
   /**
    * Set the supplier of headers to add to requests. If a key from the map collides with a constant
    * from {@link #addHeader(String, String)}, the values from both are included. Applicable only if
    * {@link OtlpGrpcLogRecordExporterBuilder#setChannel(ManagedChannel)} is not used to set channel.
    */
-  public OtlpGrpcLogRecordExporterBuilder setHeaders(
-      Supplier<Map<String, List<String>>> headerSupplier) {
-    delegate.setHeadersSupplier(headerSupplier);
+  public OtlpGrpcLogRecordExporterBuilder addHeaders(
+      Map<String, Supplier<List<String>>> headerSupplier) {
+    headerSupplier.forEach(delegate::addHeaders);
     return this;
   }
 

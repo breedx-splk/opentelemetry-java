@@ -41,7 +41,7 @@ public final class OtlpGrpcSpanExporterBuilder {
 
   OtlpGrpcSpanExporterBuilder(GrpcExporterBuilder<TraceRequestMarshaler> delegate) {
     this.delegate = delegate;
-    OtlpUserAgent.addUserAgentHeader(delegate::addConstantHeader);
+    OtlpUserAgent.addUserAgentHeader(delegate::addHeader);
   }
 
   OtlpGrpcSpanExporterBuilder() {
@@ -151,7 +151,7 @@ public final class OtlpGrpcSpanExporterBuilder {
 
   /**
    * Add a constant header to requests. If the {@code key} collides with another constant header
-   * name or a one from {@link #setHeaders(Supplier)}, the values from both are included. Applicable
+   * name or a one from {@link #addHeader(String, Supplier)}  the values from both are included. Applicable
    * only if {@link OtlpGrpcSpanExporterBuilder#setChannel(ManagedChannel)} is not used to set
    * channel.
    *
@@ -160,18 +160,21 @@ public final class OtlpGrpcSpanExporterBuilder {
    * @return this builder's instance
    */
   public OtlpGrpcSpanExporterBuilder addHeader(String key, String value) {
-    delegate.addConstantHeader(key, value);
+    delegate.addHeader(key, value);
     return this;
   }
 
+  public OtlpGrpcSpanExporterBuilder addHeader(String key, Supplier<String> value) {
+    delegate.addHeader(key, value);
+    return this;
+  }
   /**
    * Set the supplier of headers to add to requests. If a key from the map collides with a constant
    * from {@link #addHeader(String, String)}, the values from both are included. Applicable only if
    * {@link OtlpGrpcSpanExporterBuilder#setChannel(ManagedChannel)} is not used to set channel.
    */
-  public OtlpGrpcSpanExporterBuilder setHeaders(
-      Supplier<Map<String, List<String>>> headerSupplier) {
-    delegate.setHeadersSupplier(headerSupplier);
+  public OtlpGrpcSpanExporterBuilder addHeaders(Map<String, Supplier<List<String>>> headerSupplier) {
+    headerSupplier.forEach(delegate::addHeaders);
     return this;
   }
 

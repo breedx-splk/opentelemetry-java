@@ -66,7 +66,7 @@ public final class OkHttpGrpcSender<T extends Marshaler> implements GrpcSender<T
 
   private final OkHttpClient client;
   private final HttpUrl url;
-  private final Supplier<Map<String, List<String>>> headersSupplier;
+  private final Map<String, Supplier<List<String>>> headers;
   private final boolean compressionEnabled;
 
   /** Creates a new {@link OkHttpGrpcSender}. */
@@ -74,7 +74,7 @@ public final class OkHttpGrpcSender<T extends Marshaler> implements GrpcSender<T
       String endpoint,
       boolean compressionEnabled,
       long timeoutNanos,
-      Supplier<Map<String, List<String>>> headersSupplier,
+      Map<String, Supplier<List<String>>> headers,
       @Nullable RetryPolicy retryPolicy,
       @Nullable SSLContext sslContext,
       @Nullable X509TrustManager trustManager) {
@@ -95,7 +95,7 @@ public final class OkHttpGrpcSender<T extends Marshaler> implements GrpcSender<T
       clientBuilder.protocols(Arrays.asList(Protocol.HTTP_2, Protocol.HTTP_1_1));
     }
     this.client = clientBuilder.build();
-    this.headersSupplier = headersSupplier;
+    this.headers = headers;
     this.url = HttpUrl.get(endpoint);
     this.compressionEnabled = compressionEnabled;
   }
@@ -104,10 +104,13 @@ public final class OkHttpGrpcSender<T extends Marshaler> implements GrpcSender<T
   public void send(T request, Runnable onSuccess, BiConsumer<GrpcResponse, Throwable> onError) {
     Request.Builder requestBuilder = new Request.Builder().url(url);
 
-    Map<String, List<String>> headers = headersSupplier.get();
-    if (headers != null) {
-      headers.forEach(
-          (key, values) -> values.forEach(value -> requestBuilder.addHeader(key, value)));
+    if(headers != null){
+      headers.forEach((k,supplier) -> {
+        List<String> values = supplier.get();
+        if(values != null){
+          values.forEach(value -> requestBuilder.addHeader(k, value));
+        }
+      });
     }
     requestBuilder.addHeader("te", "trailers");
     if (compressionEnabled) {

@@ -21,7 +21,6 @@ import io.opentelemetry.sdk.metrics.export.MetricExporter;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import javax.net.ssl.SSLContext;
@@ -57,7 +56,7 @@ public final class OtlpGrpcMetricExporterBuilder {
   OtlpGrpcMetricExporterBuilder(GrpcExporterBuilder<MetricsRequestMarshaler> delegate) {
     this.delegate = delegate;
     delegate.setMeterProvider(MeterProvider::noop);
-    OtlpUserAgent.addUserAgentHeader(delegate::addConstantHeader);
+    OtlpUserAgent.addUserAgentHeader(delegate::addHeader);
   }
 
   OtlpGrpcMetricExporterBuilder() {
@@ -166,8 +165,8 @@ public final class OtlpGrpcMetricExporterBuilder {
   }
 
   /**
-   * Add a constant header to requests. If the {@code key} collides with another constant header
-   * name or a one from {@link #setHeaders(Supplier)}, the values from both are included. Applicable
+   * Add a constant valued header to requests. If the {@code key} collides with another constant header
+   * name or one from {@link #addHeader(String, Supplier)}, the values from both are included. Applicable
    * only if {@link OtlpGrpcMetricExporterBuilder#setChannel(ManagedChannel)} is not used to set
    * channel.
    *
@@ -176,7 +175,7 @@ public final class OtlpGrpcMetricExporterBuilder {
    * @return this builder's instance
    */
   public OtlpGrpcMetricExporterBuilder addHeader(String key, String value) {
-    delegate.addConstantHeader(key, value);
+    delegate.addHeader(key, value);
     return this;
   }
 
@@ -185,9 +184,16 @@ public final class OtlpGrpcMetricExporterBuilder {
    * from {@link #addHeader(String, String)}, the values from both are included. Applicable only if
    * {@link OtlpGrpcMetricExporterBuilder#setChannel(ManagedChannel)} is not used to set channel.
    */
-  public OtlpGrpcMetricExporterBuilder setHeaders(
-      Supplier<Map<String, List<String>>> headerSupplier) {
-    delegate.setHeadersSupplier(headerSupplier);
+  public OtlpGrpcMetricExporterBuilder addHeader(String key, Supplier<String> headerSupplier) {
+    delegate.addHeader(key, headerSupplier);
+    return this;
+  }
+
+  /**
+   * TODO NEEDS JAVADOC
+   */
+  public OtlpGrpcMetricExporterBuilder addHeaderMulti(String key, Supplier<List<String>> headerSupplier) {
+    delegate.addHeaders(key, headerSupplier);
     return this;
   }
 
