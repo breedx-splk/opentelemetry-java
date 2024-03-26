@@ -23,6 +23,11 @@ class DefaultEventLogger implements EventLogger {
   }
 
   @Override
+  public <T> void emit(String eventName, AnyValue<T> payload, Attributes attributes){
+    // noop
+  }
+
+  @Override
   public EventBuilder builder(String eventName) {
     return NoOpEventBuilder.INSTANCE;
   }
@@ -63,5 +68,10 @@ class DefaultEventLogger implements EventLogger {
 
     @Override
     public void emit() {}
+
+    @Override
+    public <T> EventBuilder setPayload(AnyValue<T> payload) {
+      return this;
+    }
   }
 }

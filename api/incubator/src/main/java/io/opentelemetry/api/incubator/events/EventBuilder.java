@@ -108,4 +108,6 @@ public interface EventBuilder {
 
   /** Emit an event. */
   void emit();
+
+  <T> EventBuilder setPayload(AnyValue<T> payload);
 }

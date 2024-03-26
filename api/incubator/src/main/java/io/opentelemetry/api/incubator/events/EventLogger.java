@@ -5,6 +5,8 @@
 
 package io.opentelemetry.api.incubator.events;
 
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.incubator.logs.AnyValue;
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -30,6 +32,9 @@ import javax.annotation.concurrent.ThreadSafe;
  */
 @ThreadSafe
 public interface EventLogger {
+
+  <T> void emit(String eventName, AnyValue<T> payload, Attributes attributes);
+
 
   /**
    * Return a {@link EventBuilder} to emit an event.

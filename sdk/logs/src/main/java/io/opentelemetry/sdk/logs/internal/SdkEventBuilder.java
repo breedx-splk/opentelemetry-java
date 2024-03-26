@@ -36,6 +36,13 @@ class SdkEventBuilder implements EventBuilder {
   }
 
   @Override
+  public <T> EventBuilder setPayload(AnyValue<T> payload) {
+    this.payload.clear();
+    ((ExtendedLogRecordBuilder) logRecordBuilder).setBody(payload);
+    return this;
+  }
+
+  @Override
   public EventBuilder put(String key, AnyValue<?> value) {
     payload.put(key, value);
     return this;

@@ -5,10 +5,12 @@
 
 package io.opentelemetry.sdk.logs.internal;
 
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.incubator.events.EventBuilder;
 import io.opentelemetry.api.incubator.events.EventLogger;
 import io.opentelemetry.api.incubator.events.EventLoggerBuilder;
 import io.opentelemetry.api.incubator.events.EventLoggerProvider;
+import io.opentelemetry.api.incubator.logs.AnyValue;
 import io.opentelemetry.api.logs.Logger;
 import io.opentelemetry.api.logs.LoggerBuilder;
 import io.opentelemetry.api.logs.LoggerProvider;
@@ -95,6 +97,14 @@ public final class SdkEventLoggerProvider implements EventLoggerProvider {
     private SdkEventLogger(Clock clock, Logger delegateLogger) {
       this.clock = clock;
       this.delegateLogger = delegateLogger;
+    }
+
+    @Override
+    public <T> void emit(String eventName, AnyValue<T> payload, Attributes attributes) {
+      builder(eventName)
+          .setAttributes(attributes)
+          .setPayload(payload)
+          .emit();
     }
 
     @Override
