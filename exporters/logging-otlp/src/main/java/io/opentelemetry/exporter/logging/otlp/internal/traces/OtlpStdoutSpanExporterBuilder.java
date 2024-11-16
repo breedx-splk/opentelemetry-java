@@ -13,6 +13,7 @@ import io.opentelemetry.exporter.logging.otlp.internal.writer.LoggerJsonWriter;
 import io.opentelemetry.exporter.logging.otlp.internal.writer.StreamJsonWriter;
 import io.opentelemetry.sdk.common.export.MemoryMode;
 import java.io.OutputStream;
+import java.util.function.Function;
 import java.util.logging.Logger;
 
 /**
@@ -26,13 +27,14 @@ public final class OtlpStdoutSpanExporterBuilder {
   private static final String TYPE = "spans";
 
   private final Logger logger;
-  private JsonWriter jsonWriter;
+//  private JsonWriter jsonWriter;
+  private Function<Boolean,JsonWriter> jsonWriter;
   private boolean wrapperJsonObject = true;
   private MemoryMode memoryMode = MemoryMode.IMMUTABLE_DATA;
 
   public OtlpStdoutSpanExporterBuilder(Logger logger) {
     this.logger = logger;
-    this.jsonWriter = new LoggerJsonWriter(logger, TYPE);
+    this.jsonWriter = b -> new LoggerJsonWriter(logger, TYPE, b);
   }
 
   /**
@@ -67,14 +69,14 @@ public final class OtlpStdoutSpanExporterBuilder {
    */
   public OtlpStdoutSpanExporterBuilder setOutput(OutputStream outputStream) {
     requireNonNull(outputStream, "outputStream");
-    this.jsonWriter = new StreamJsonWriter(outputStream, TYPE);
+    this.jsonWriter = b -> new StreamJsonWriter(outputStream, TYPE);
     return this;
   }
 
   /** Sets the exporter to use the specified logger. */
   public OtlpStdoutSpanExporterBuilder setOutput(Logger logger) {
     requireNonNull(logger, "logger");
-    this.jsonWriter = new LoggerJsonWriter(logger, TYPE);
+    this.jsonWriter = b -> new LoggerJsonWriter(logger, TYPE, b);
     return this;
   }
 
@@ -88,6 +90,6 @@ public final class OtlpStdoutSpanExporterBuilder {
       throw new IllegalArgumentException(
           "Reusable data mode is not supported without wrapperJsonObject");
     }
-    return new OtlpStdoutSpanExporter(logger, jsonWriter, wrapperJsonObject, memoryMode);
+    return new OtlpStdoutSpanExporter(logger, jsonWriter.apply(pretty), wrapperJsonObject, memoryMode);
   }
 }
