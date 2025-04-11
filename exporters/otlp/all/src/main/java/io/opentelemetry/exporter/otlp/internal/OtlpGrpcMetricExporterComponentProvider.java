@@ -39,14 +39,7 @@ public class OtlpGrpcMetricExporterComponentProvider implements ComponentProvide
     OtlpDeclarativeConfigUtil.configureOtlpExporterBuilder(
         DATA_TYPE_METRICS,
         config,
-        builder::setEndpoint,
-        builder::addHeader,
-        builder::setCompression,
-        builder::setTimeout,
-        builder::setTrustedCertificates,
-        builder::setClientTls,
-        builder::setRetryPolicy,
-        builder::setMemoryMode,
+        builder,
         /* isHttpProtobuf= */ false);
     IncubatingExporterBuilderUtil.configureOtlpAggregationTemporality(
         config, builder::setAggregationTemporalitySelector);

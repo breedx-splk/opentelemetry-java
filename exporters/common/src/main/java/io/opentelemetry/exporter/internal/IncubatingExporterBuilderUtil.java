@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 public final class IncubatingExporterBuilderUtil {
 
   /** Invoke the {@code memoryModeConsumer} with the configured {@link MemoryMode}. */
-  public static void configureExporterMemoryMode(
-      DeclarativeConfigProperties config, Consumer<MemoryMode> memoryModeConsumer) {
+  public static <T> void configureExporterMemoryMode(
+      DeclarativeConfigProperties config, ExporterBuilderBasics<T> builder) {
     String memoryModeStr = config.getString("memory_mode");
     if (memoryModeStr == null) {
       return;
@@ -39,7 +39,7 @@ public final class IncubatingExporterBuilderUtil {
     } catch (IllegalArgumentException e) {
       throw new ConfigurationException("Unrecognized memory_mode: " + memoryModeStr, e);
     }
-    memoryModeConsumer.accept(memoryMode);
+    builder.setMemoryMode(memoryMode);
   }
 
   public static void configureOtlpAggregationTemporality(

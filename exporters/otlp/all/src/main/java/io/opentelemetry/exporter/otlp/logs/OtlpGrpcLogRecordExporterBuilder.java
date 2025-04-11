@@ -11,6 +11,7 @@ import static java.util.Objects.requireNonNull;
 import io.grpc.ManagedChannel;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.metrics.MeterProvider;
+import io.opentelemetry.exporter.internal.ExporterBuilderBasics;
 import io.opentelemetry.exporter.internal.compression.Compressor;
 import io.opentelemetry.exporter.internal.compression.CompressorProvider;
 import io.opentelemetry.exporter.internal.compression.CompressorUtil;
@@ -34,7 +35,7 @@ import javax.net.ssl.X509TrustManager;
  *
  * @since 1.27.0
  */
-public final class OtlpGrpcLogRecordExporterBuilder {
+public final class OtlpGrpcLogRecordExporterBuilder implements ExporterBuilderBasics<OtlpGrpcLogRecordExporterBuilder> {
 
   private static final String GRPC_SERVICE_NAME =
       "opentelemetry.proto.collector.logs.v1.LogsService";
@@ -102,6 +103,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * Sets the maximum time to wait for the collector to process an exported batch of logs. If unset,
    * defaults to {@value DEFAULT_TIMEOUT_SECS}s.
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setTimeout(Duration timeout) {
     requireNonNull(timeout, "timeout");
     delegate.setTimeout(timeout);
@@ -136,6 +138,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * Sets the OTLP endpoint to connect to. If unset, defaults to {@value DEFAULT_ENDPOINT_URL}. The
    * endpoint must start with either http:// or https://.
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setEndpoint(String endpoint) {
     requireNonNull(endpoint, "endpoint");
     delegate.setEndpoint(endpoint);
@@ -147,6 +150,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * method "gzip" and "none" are supported out of the box. Support for additional compression
    * methods is available by implementing {@link Compressor} and {@link CompressorProvider}.
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setCompression(String compressionMethod) {
     requireNonNull(compressionMethod, "compressionMethod");
     Compressor compressor = CompressorUtil.validateAndResolveCompressor(compressionMethod);
@@ -159,6 +163,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * should contain an X.509 certificate collection in PEM format. If not set, TLS connections will
    * use the system default trusted certificates.
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setTrustedCertificates(byte[] trustedCertificatesPem) {
     delegate.setTrustManagerFromCerts(trustedCertificatesPem);
     return this;
@@ -168,6 +173,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * Sets ths client key and the certificate chain to use for verifying client when TLS is enabled.
    * The key must be PKCS8, and both must be in PEM format.
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setClientTls(
       byte[] privateKeyPem, byte[] certificatePem) {
     delegate.setKeyManagerFromCerts(privateKeyPem, certificatePem);
@@ -194,6 +200,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    * @param value header value
    * @return this builder's instance
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder addHeader(String key, String value) {
     delegate.addConstantHeader(key, value);
     return this;
@@ -217,6 +224,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    *
    * @since 1.28.0
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setRetryPolicy(@Nullable RetryPolicy retryPolicy) {
     delegate.setRetryPolicy(retryPolicy);
     return this;
@@ -253,6 +261,7 @@ public final class OtlpGrpcLogRecordExporterBuilder {
    *
    * @since 1.39.0
    */
+  @Override
   public OtlpGrpcLogRecordExporterBuilder setMemoryMode(MemoryMode memoryMode) {
     requireNonNull(memoryMode, "memoryMode");
     this.memoryMode = memoryMode;

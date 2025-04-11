@@ -39,14 +39,7 @@ public class OtlpHttpLogRecordExporterComponentProvider
     OtlpDeclarativeConfigUtil.configureOtlpExporterBuilder(
         DATA_TYPE_LOGS,
         config,
-        builder::setEndpoint,
-        builder::addHeader,
-        builder::setCompression,
-        builder::setTimeout,
-        builder::setTrustedCertificates,
-        builder::setClientTls,
-        builder::setRetryPolicy,
-        builder::setMemoryMode,
+        builder,
         /* isHttpProtobuf= */ true);
 
     return builder.build();

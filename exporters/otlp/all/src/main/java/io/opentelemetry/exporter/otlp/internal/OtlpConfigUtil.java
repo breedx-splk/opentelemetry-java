@@ -5,6 +5,7 @@
 
 package io.opentelemetry.exporter.otlp.internal;
 
+import io.opentelemetry.exporter.internal.ExporterBuilderBasics;
 import io.opentelemetry.exporter.internal.ExporterBuilderUtil;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigurationException;
@@ -50,17 +51,10 @@ public final class OtlpConfigUtil {
 
   /** Invoke the setters with the OTLP configuration for the {@code dataType}. */
   @SuppressWarnings("TooManyParameters")
-  public static void configureOtlpExporterBuilder(
+  public static <T> void configureOtlpExporterBuilder(
       String dataType,
       ConfigProperties config,
-      Consumer<String> setEndpoint,
-      BiConsumer<String, String> addHeader,
-      Consumer<String> setCompression,
-      Consumer<Duration> setTimeout,
-      Consumer<byte[]> setTrustedCertificates,
-      BiConsumer<byte[], byte[]> setClientTls,
-      Consumer<RetryPolicy> setRetryPolicy,
-      Consumer<MemoryMode> setMemoryMode) {
+      ExporterBuilderBasics<T> builder) {
     String protocol = getOtlpProtocol(dataType, config);
     boolean isHttpProtobuf = protocol.equals(PROTOCOL_HTTP_PROTOBUF);
     URL endpoint =
@@ -82,17 +76,17 @@ public final class OtlpConfigUtil {
       }
     }
     if (endpoint != null) {
-      setEndpoint.accept(endpoint.toString());
+      builder.setEndpoint(endpoint.toString());
     }
 
-    configureOtlpHeaders(config, dataType, addHeader);
+    configureOtlpHeaders(config, dataType, builder);
 
     String compression = config.getString("otel.exporter.otlp." + dataType + ".compression");
     if (compression == null) {
       compression = config.getString("otel.exporter.otlp.compression");
     }
     if (compression != null) {
-      setCompression.accept(compression);
+      builder.setCompression(compression);
     }
 
     Duration timeout = config.getDuration("otel.exporter.otlp." + dataType + ".timeout");
@@ -100,7 +94,7 @@ public final class OtlpConfigUtil {
       timeout = config.getDuration("otel.exporter.otlp.timeout");
     }
     if (timeout != null) {
-      setTimeout.accept(timeout);
+      builder.setTimeout(timeout);
     }
 
     String certificatePath =
@@ -123,26 +117,26 @@ public final class OtlpConfigUtil {
 
     byte[] certificateBytes = readFileBytes(certificatePath);
     if (certificateBytes != null) {
-      setTrustedCertificates.accept(certificateBytes);
+      builder.setTrustedCertificates(certificateBytes);
     }
 
     byte[] clientKeyBytes = readFileBytes(clientKeyPath);
     byte[] clientKeyChainBytes = readFileBytes(clientKeyChainPath);
 
     if (clientKeyBytes != null && clientKeyChainBytes != null) {
-      setClientTls.accept(clientKeyBytes, clientKeyChainBytes);
+      builder.setClientTls(clientKeyBytes, clientKeyChainBytes);
     }
 
     Boolean retryDisabled = config.getBoolean("otel.java.exporter.otlp.retry.disabled");
     if (retryDisabled != null && retryDisabled) {
-      setRetryPolicy.accept(null);
+      builder.setRetryPolicy(null);
     }
 
-    ExporterBuilderUtil.configureExporterMemoryMode(config, setMemoryMode);
+    ExporterBuilderUtil.configureExporterMemoryMode(config, builder);
   }
 
-  static void configureOtlpHeaders(
-      ConfigProperties config, String dataType, BiConsumer<String, String> addHeader) {
+  static <T> void configureOtlpHeaders(
+      ConfigProperties config, String dataType, ExporterBuilderBasics<T> builder) {
     Map<String, String> headers = config.getMap("otel.exporter.otlp." + dataType + ".headers");
     if (headers.isEmpty()) {
       headers = config.getMap("otel.exporter.otlp.headers");
@@ -153,7 +147,7 @@ public final class OtlpConfigUtil {
       try {
         // headers are encoded as URL - see
         // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/exporter.md#specifying-headers-via-environment-variables
-        addHeader.accept(key, URLDecoder.decode(value, StandardCharsets.UTF_8.displayName()));
+        builder.addHeader(key, URLDecoder.decode(value, StandardCharsets.UTF_8.displayName()));
       } catch (Exception e) {
         throw new ConfigurationException("Cannot decode header value: " + value, e);
       }

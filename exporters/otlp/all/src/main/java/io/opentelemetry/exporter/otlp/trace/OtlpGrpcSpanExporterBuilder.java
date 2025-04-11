@@ -11,6 +11,7 @@ import static java.util.Objects.requireNonNull;
 import io.grpc.ManagedChannel;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.metrics.MeterProvider;
+import io.opentelemetry.exporter.internal.ExporterBuilderBasics;
 import io.opentelemetry.exporter.internal.compression.Compressor;
 import io.opentelemetry.exporter.internal.compression.CompressorProvider;
 import io.opentelemetry.exporter.internal.compression.CompressorUtil;
@@ -30,7 +31,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
 /** Builder utility for this exporter. */
-public final class OtlpGrpcSpanExporterBuilder {
+public final class OtlpGrpcSpanExporterBuilder implements ExporterBuilderBasics<OtlpGrpcSpanExporterBuilder> {
 
   // Visible for testing
   static final String GRPC_SERVICE_NAME = "opentelemetry.proto.collector.trace.v1.TraceService";
@@ -98,6 +99,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * Sets the maximum time to wait for the collector to process an exported batch of spans. If
    * unset, defaults to {@value DEFAULT_TIMEOUT_SECS}s.
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setTimeout(Duration timeout) {
     requireNonNull(timeout, "timeout");
     delegate.setTimeout(timeout);
@@ -132,6 +134,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * Sets the OTLP endpoint to connect to. If unset, defaults to {@value DEFAULT_ENDPOINT_URL}. The
    * endpoint must start with either http:// or https://.
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setEndpoint(String endpoint) {
     requireNonNull(endpoint, "endpoint");
     delegate.setEndpoint(endpoint);
@@ -143,6 +146,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * method "gzip" and "none" are supported out of the box. Support for additional compression
    * methods is available by implementing {@link Compressor} and {@link CompressorProvider}.
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setCompression(String compressionMethod) {
     requireNonNull(compressionMethod, "compressionMethod");
     Compressor compressor = CompressorUtil.validateAndResolveCompressor(compressionMethod);
@@ -155,6 +159,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * should contain an X.509 certificate collection in PEM format. If not set, TLS connections will
    * use the system default trusted certificates.
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setTrustedCertificates(byte[] trustedCertificatesPem) {
     delegate.setTrustManagerFromCerts(trustedCertificatesPem);
     return this;
@@ -164,6 +169,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * Sets ths client key and the certificate chain to use for verifying client when TLS is enabled.
    * The key must be PKCS8, and both must be in PEM format.
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setClientTls(byte[] privateKeyPem, byte[] certificatePem) {
     delegate.setKeyManagerFromCerts(privateKeyPem, certificatePem);
     return this;
@@ -191,6 +197,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    * @param value header value
    * @return this builder's instance
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder addHeader(String key, String value) {
     delegate.addConstantHeader(key, value);
     return this;
@@ -214,6 +221,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    *
    * @since 1.28.0
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setRetryPolicy(@Nullable RetryPolicy retryPolicy) {
     delegate.setRetryPolicy(retryPolicy);
     return this;
@@ -250,6 +258,7 @@ public final class OtlpGrpcSpanExporterBuilder {
    *
    * @since 1.39.0
    */
+  @Override
   public OtlpGrpcSpanExporterBuilder setMemoryMode(MemoryMode memoryMode) {
     requireNonNull(memoryMode, "memoryMode");
     this.memoryMode = memoryMode;

@@ -37,6 +37,7 @@ dependencies {
   testImplementation(project(":exporters:logging-otlp"))
   testImplementation(project(":exporters:otlp:all"))
   testImplementation(project(":exporters:prometheus"))
+  testImplementation(project(":exporters:common"))
   testImplementation(project(":exporters:zipkin"))
   testImplementation(project(":sdk-extensions:jaeger-remote-sampler"))
   testImplementation(project(":extensions:trace-propagators"))

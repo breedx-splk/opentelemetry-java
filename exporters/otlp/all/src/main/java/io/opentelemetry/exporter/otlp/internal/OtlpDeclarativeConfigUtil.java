@@ -11,6 +11,7 @@ import static io.opentelemetry.exporter.otlp.internal.OtlpConfigUtil.readFileByt
 import static io.opentelemetry.exporter.otlp.internal.OtlpConfigUtil.validateEndpoint;
 
 import io.opentelemetry.api.incubator.config.DeclarativeConfigProperties;
+import io.opentelemetry.exporter.internal.ExporterBuilderBasics;
 import io.opentelemetry.exporter.internal.IncubatingExporterBuilderUtil;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigurationException;
@@ -44,21 +45,14 @@ public final class OtlpDeclarativeConfigUtil {
 
   /** Invoke the setters with the OTLP configuration for the {@code dataType}. */
   @SuppressWarnings("TooManyParameters")
-  public static void configureOtlpExporterBuilder(
+  public static <T> void configureOtlpExporterBuilder(
       String dataType,
       DeclarativeConfigProperties config,
-      Consumer<String> setEndpoint,
-      BiConsumer<String, String> addHeader,
-      Consumer<String> setCompression,
-      Consumer<Duration> setTimeout,
-      Consumer<byte[]> setTrustedCertificates,
-      BiConsumer<byte[], byte[]> setClientTls,
-      Consumer<RetryPolicy> setRetryPolicy,
-      Consumer<MemoryMode> setMemoryMode,
+      ExporterBuilderBasics<T> builder,
       boolean isHttpProtobuf) {
     URL endpoint = validateEndpoint(config.getString("endpoint"), isHttpProtobuf);
     if (endpoint != null) {
-      setEndpoint.accept(endpoint.toString());
+      builder.setEndpoint(endpoint.toString());
     }
 
     String headerList = config.getString("headers_list");
@@ -66,7 +60,7 @@ public final class OtlpDeclarativeConfigUtil {
       ConfigProperties headersListConfig =
           DefaultConfigProperties.createFromMap(
               Collections.singletonMap("otel.exporter.otlp.headers", headerList));
-      configureOtlpHeaders(headersListConfig, dataType, addHeader);
+      configureOtlpHeaders(headersListConfig, dataType, builder);
     }
 
     List<DeclarativeConfigProperties> headers = config.getStructuredList("headers");
@@ -76,19 +70,19 @@ public final class OtlpDeclarativeConfigUtil {
             String name = header.getString("name");
             String value = header.getString("value");
             if (name != null && value != null) {
-              addHeader.accept(name, value);
+              builder.addHeader(name, value);
             }
           });
     }
 
     String compression = config.getString("compression");
     if (compression != null) {
-      setCompression.accept(compression);
+      builder.setCompression(compression);
     }
 
     Integer timeoutMs = config.getInt("timeout");
     if (timeoutMs != null) {
-      setTimeout.accept(Duration.ofMillis(timeoutMs));
+      builder.setTimeout(Duration.ofMillis(timeoutMs));
     }
 
     String certificatePath = config.getString("certificate_file");
@@ -104,15 +98,15 @@ public final class OtlpDeclarativeConfigUtil {
     }
     byte[] certificateBytes = readFileBytes(certificatePath);
     if (certificateBytes != null) {
-      setTrustedCertificates.accept(certificateBytes);
+      builder.setTrustedCertificates(certificateBytes);
     }
     byte[] clientKeyBytes = readFileBytes(clientKeyPath);
     byte[] clientKeyChainBytes = readFileBytes(clientKeyChainPath);
     if (clientKeyBytes != null && clientKeyChainBytes != null) {
-      setClientTls.accept(clientKeyBytes, clientKeyChainBytes);
+      builder.setClientTls(clientKeyBytes, clientKeyChainBytes);
     }
 
-    IncubatingExporterBuilderUtil.configureExporterMemoryMode(config, setMemoryMode);
+    IncubatingExporterBuilderUtil.configureExporterMemoryMode(config, builder);
   }
 
   private OtlpDeclarativeConfigUtil() {}

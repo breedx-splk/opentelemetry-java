@@ -47,8 +47,8 @@ public final class ExporterBuilderUtil {
   }
 
   /** Invoke the {@code memoryModeConsumer} with the configured {@link MemoryMode}. */
-  public static void configureExporterMemoryMode(
-      ConfigProperties config, Consumer<MemoryMode> memoryModeConsumer) {
+  public static <T> void configureExporterMemoryMode(
+      ConfigProperties config, ExporterBuilderBasics<T> builder) {
     String memoryModeStr = config.getString("otel.java.exporter.memory_mode");
     if (memoryModeStr == null) {
       return;
@@ -59,7 +59,7 @@ public final class ExporterBuilderUtil {
     } catch (IllegalArgumentException e) {
       throw new ConfigurationException("Unrecognized memory mode: " + memoryModeStr, e);
     }
-    memoryModeConsumer.accept(memoryMode);
+    builder.setMemoryMode(memoryMode);
   }
 
   /**

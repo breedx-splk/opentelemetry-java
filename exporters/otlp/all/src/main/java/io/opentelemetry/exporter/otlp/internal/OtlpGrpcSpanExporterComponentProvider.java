@@ -38,14 +38,7 @@ public class OtlpGrpcSpanExporterComponentProvider implements ComponentProvider<
     OtlpDeclarativeConfigUtil.configureOtlpExporterBuilder(
         DATA_TYPE_TRACES,
         config,
-        builder::setEndpoint,
-        builder::addHeader,
-        builder::setCompression,
-        builder::setTimeout,
-        builder::setTrustedCertificates,
-        builder::setClientTls,
-        builder::setRetryPolicy,
-        builder::setMemoryMode,
+        builder,
         /* isHttpProtobuf= */ false);
 
     return builder.build();

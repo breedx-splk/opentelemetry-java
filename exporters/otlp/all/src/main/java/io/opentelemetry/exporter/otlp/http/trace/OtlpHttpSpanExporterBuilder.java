@@ -10,6 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.metrics.MeterProvider;
+import io.opentelemetry.exporter.internal.ExporterBuilderBasics;
 import io.opentelemetry.exporter.internal.compression.Compressor;
 import io.opentelemetry.exporter.internal.compression.CompressorProvider;
 import io.opentelemetry.exporter.internal.compression.CompressorUtil;
@@ -33,7 +34,7 @@ import javax.net.ssl.X509TrustManager;
  *
  * @since 1.5.0
  */
-public final class OtlpHttpSpanExporterBuilder {
+public final class OtlpHttpSpanExporterBuilder implements ExporterBuilderBasics<OtlpHttpSpanExporterBuilder> {
 
   private static final String DEFAULT_ENDPOINT = "http://localhost:4318/v1/traces";
   private static final MemoryMode DEFAULT_MEMORY_MODE = MemoryMode.REUSABLE_DATA;
