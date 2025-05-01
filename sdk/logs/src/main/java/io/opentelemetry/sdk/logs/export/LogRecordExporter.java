@@ -6,6 +6,7 @@
 package io.opentelemetry.sdk.logs.export;
 
 import io.opentelemetry.sdk.common.CompletableResultCode;
+import io.opentelemetry.sdk.common.OtelExporter;
 import io.opentelemetry.sdk.logs.LogRecordProcessor;
 import io.opentelemetry.sdk.logs.SdkLoggerProvider;
 import io.opentelemetry.sdk.logs.data.LogRecordData;
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @since 1.27.0
  */
-public interface LogRecordExporter extends Closeable {
+public interface LogRecordExporter extends OtelExporter<LogRecordData>, Closeable {
 
   /**
    * Returns a {@link LogRecordExporter} which delegates all exports to the {@code exporters} in
@@ -62,6 +63,7 @@ public interface LogRecordExporter extends Closeable {
    * @param logs the collection of {@link LogRecordData} to be exported
    * @return the result of the export, which is often an asynchronous operation
    */
+  @Override
   CompletableResultCode export(Collection<LogRecordData> logs);
 
   /**
@@ -69,6 +71,7 @@ public interface LogRecordExporter extends Closeable {
    *
    * @return the result of the flush, which is often an asynchronous operation
    */
+  @Override
   CompletableResultCode flush();
 
   /**
@@ -78,6 +81,7 @@ public interface LogRecordExporter extends Closeable {
    *
    * @return a {@link CompletableResultCode} which is completed when shutdown completes
    */
+  @Override
   CompletableResultCode shutdown();
 
   /** Closes this {@link LogRecordExporter}, releasing any resources. */

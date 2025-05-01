@@ -8,6 +8,7 @@ package io.opentelemetry.sdk.metrics.export;
 import static io.opentelemetry.sdk.common.export.MemoryMode.IMMUTABLE_DATA;
 
 import io.opentelemetry.sdk.common.CompletableResultCode;
+import io.opentelemetry.sdk.common.OtelExporter;
 import io.opentelemetry.sdk.common.export.MemoryMode;
 import io.opentelemetry.sdk.metrics.Aggregation;
 import io.opentelemetry.sdk.metrics.InstrumentType;
@@ -28,7 +29,10 @@ import java.util.concurrent.TimeUnit;
  * @since 1.14.0
  */
 public interface MetricExporter
-    extends AggregationTemporalitySelector, DefaultAggregationSelector, Closeable {
+    extends OtelExporter<MetricData>,
+        AggregationTemporalitySelector,
+        DefaultAggregationSelector,
+        Closeable {
 
   /**
    * Return the default aggregation for the {@link InstrumentType}.
@@ -58,6 +62,7 @@ public interface MetricExporter
    * @param metrics the metrics to export.
    * @return the result of the export, which is often an asynchronous operation.
    */
+  @Override
   CompletableResultCode export(Collection<MetricData> metrics);
 
   /**
@@ -65,6 +70,7 @@ public interface MetricExporter
    *
    * @return the result of the flush, which is often an asynchronous operation.
    */
+  @Override
   CompletableResultCode flush();
 
   /**
@@ -74,6 +80,7 @@ public interface MetricExporter
    *
    * @return a {@link CompletableResultCode} which is completed when shutdown completes.
    */
+  @Override
   CompletableResultCode shutdown();
 
   /** Closes this {@link MetricExporter}, releasing any resources. */

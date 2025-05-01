@@ -6,6 +6,7 @@
 package io.opentelemetry.sdk.trace.export;
 
 import io.opentelemetry.sdk.common.CompletableResultCode;
+import io.opentelemetry.sdk.common.OtelExporter;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.data.SpanData;
@@ -20,10 +21,10 @@ import java.util.concurrent.TimeUnit;
  * An interface that allows different tracing services to export recorded data for sampled spans in
  * their own format.
  *
- * <p>To export data this MUST be register to the {@code TracerSdk} using a {@link
+ * <p>To export data this MUST be registered to the {@code TracerSdk} using a {@link
  * SimpleSpanProcessor} or a {@code BatchSampledSpansProcessor}.
  */
-public interface SpanExporter extends Closeable {
+public interface SpanExporter extends OtelExporter<SpanData>, Closeable {
 
   /**
    * Returns a {@link SpanExporter} which delegates all exports to the {@code exporters} in order.
@@ -63,6 +64,7 @@ public interface SpanExporter extends Closeable {
    * @param spans the collection of sampled Spans to be exported.
    * @return the result of the export, which is often an asynchronous operation.
    */
+  @Override
   CompletableResultCode export(Collection<SpanData> spans);
 
   /**
@@ -73,6 +75,7 @@ public interface SpanExporter extends Closeable {
    *
    * @return the result of the flush, which is often an asynchronous operation.
    */
+  @Override
   CompletableResultCode flush();
 
   /**
@@ -81,6 +84,7 @@ public interface SpanExporter extends Closeable {
    *
    * @return a {@link CompletableResultCode} which is completed when shutdown completes.
    */
+  @Override
   CompletableResultCode shutdown();
 
   /** Closes this {@link SpanExporter}, releasing any resources. */
