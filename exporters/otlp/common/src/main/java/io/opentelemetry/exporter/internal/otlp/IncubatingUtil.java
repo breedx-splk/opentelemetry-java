@@ -117,9 +117,9 @@ public class IncubatingUtil {
   }
 
   private static ExtendedAttributes getExtendedAttributes(LogRecordData logRecordData) {
-    if (!(logRecordData instanceof ExtendedLogRecordData)) {
-      throw new IllegalArgumentException("logRecordData must be ExtendedLogRecordData");
+    if (logRecordData instanceof ExtendedLogRecordData) {
+      return ((ExtendedLogRecordData) logRecordData).getExtendedAttributes();
     }
-    return ((ExtendedLogRecordData) logRecordData).getExtendedAttributes();
+    return ExtendedAttributes.empty();
   }
 }
